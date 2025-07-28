@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Spacer(),
                                       Container(
-                                        width: width * 0.7, // ✅ added this line
+                                        width: width * 0.7,
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
