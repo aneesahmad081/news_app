@@ -151,18 +151,29 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: CachedNetworkImage(
-                                  imageUrl: article.urlToImage ?? '',
-                                  width: width * 0.9,
-                                  height: height * 0.6,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => Spinkit2,
-                                  errorWidget: (context, url, error) =>
-                                      const Icon(
-                                        Icons.error,
-                                        color: Colors.red,
+                                child:
+                                    (article.urlToImage != null &&
+                                        article.urlToImage!.isNotEmpty)
+                                    ? CachedNetworkImage(
+                                        imageUrl: article.urlToImage!,
+                                        width: width * 0.9,
+                                        height: height * 0.6,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) => Spinkit2,
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(
+                                              Icons.error,
+                                              color: Colors.red,
+                                            ),
+                                      )
+                                    : Container(
+                                        width: width * 0.9,
+                                        height: height * 0.6,
+                                        color: Colors.grey[300],
+                                        child: const Icon(
+                                          Icons.image_not_supported,
+                                        ),
                                       ),
-                                ),
                               ),
                               Positioned(
                                 bottom: 20,

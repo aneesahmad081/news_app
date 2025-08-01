@@ -31,95 +31,99 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.deepOrange),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 50,
-            child: ListView.builder(
-              itemCount: categories.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                final isSelected = category['value'] == selectedCategory;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: ChoiceChip(
-                    label: Text(
-                      category['title']!,
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    selected: isSelected,
-                    selectedColor: Colors.deepPurple,
-                    onSelected: (_) {
-                      setState(() {
-                        selectedCategory = category['value']!;
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
-          Expanded(
-            child: FutureBuilder<NewsChannelsHeadlinesModel>(
-              future: NewsViewModel.fetchNewsByCategoryStatic(selectedCategory),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: SpinKitCircle(color: Colors.blue, size: 40),
-                  );
-                } else if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
-                } else if (!snapshot.hasData ||
-                    snapshot.data!.articles == null) {
-                  return Center(child: Text("No news found."));
-                }
-
-                final articles = snapshot.data!.articles!;
-                return ListView.builder(
-                  itemCount: articles.length,
-                  itemBuilder: (context, index) {
-                    final article = articles[index];
-                    final date = DateTime.parse(article.publishedAt!);
-
-                    return ListTile(
-                      leading: CachedNetworkImage(
-                        imageUrl: article.urlToImage ?? '',
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
-                        placeholder: (_, __) => const SpinKitFadingCircle(
-                          color: Colors.amber,
-                          size: 30,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                itemCount: categories.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  final isSelected = category['value'] == selectedCategory;
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: ChoiceChip(
+                      label: Text(
+                        category['title']!,
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
                         ),
-                        errorWidget: (_, __, ___) =>
-                            const Icon(Icons.error, color: Colors.red),
                       ),
-                      title: Text(
-                        article.title ?? '',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(format.format(date)),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                NewsDetailScreen(article: article),
-                          ),
-                        );
+                      selected: isSelected,
+                      selectedColor: Colors.deepPurple,
+                      onSelected: (_) {
+                        setState(() {
+                          selectedCategory = category['value']!;
+                        });
                       },
-                    );
-                  },
-                );
-              },
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: FutureBuilder<NewsChannelsHeadlinesModel>(
+                future: NewsViewModel.fetchNewsByCategoryStatic(
+                  selectedCategory,
+                ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: SpinKitCircle(color: Colors.blue, size: 40),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text("Error: ${snapshot.error}"));
+                  } else if (!snapshot.hasData ||
+                      snapshot.data!.articles == null) {
+                    return Center(child: Text("No news found."));
+                  }
+
+                  final articles = snapshot.data!.articles!;
+                  return ListView.builder(
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) {
+                      final article = articles[index];
+                      final date = DateTime.parse(article.publishedAt!);
+
+                      return ListTile(
+                        leading: CachedNetworkImage(
+                          imageUrl: article.urlToImage ?? '',
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => const SpinKitFadingCircle(
+                            color: Colors.amber,
+                            size: 30,
+                          ),
+                          errorWidget: (_, __, ___) =>
+                              const Icon(Icons.error, color: Colors.red),
+                        ),
+                        title: Text(
+                          article.title ?? '',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(format.format(date)),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  NewsDetailScreen(article: article),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
